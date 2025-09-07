@@ -22,7 +22,7 @@ const limiter = rateLimit({
 app.use(limiter);
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.FRONTEND_URL] 
+    ? [process.env.FRONTEND_URL, 'https://main.d3vxdunsumxv41.amplifyapp.com'] 
     : ['http://localhost:3000', 'http://127.0.0.1:3000'],
   credentials: true
 }));
