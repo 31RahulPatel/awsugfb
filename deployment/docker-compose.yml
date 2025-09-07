@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: aws-ug-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: aws-ug-feedback
+    volumes:
+      - mongodb_data:/data/db
+
+  backend:
+    build: ../backend
+    container_name: aws-ug-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:password123@mongodb:27017/aws-ug-feedback?authSource=admin
+      - JWT_SECRET=your-super-secret-jwt-key-here
+      - ADMIN_EMAIL=admin@awsugvadodara.com
+      - ADMIN_PASSWORD=AdminPass123!
+    depends_on:
+      - mongodb
+    volumes:
+      - ../backend/uploads:/app/uploads
+
+  frontend:
+    build: ../frontend
+    container_name: aws-ug-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000/api
+    depends_on:
+      - backend
+
+volumes:
+  mongodb_data:

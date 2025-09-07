@@ -1,0 +1,33 @@
+time,sessionId,title,speakers,room,track
+8:00 AM - 9:20 AM,REG,"Registration, Networking & Breakfast",,,
+9:30 AM - 9:45 AM,WELCOME,Welcome Note,"Mr. Manan Vasavada, CEO @ AV DEVS Solutions",,
+9:45 AM - 10:00 AM,COMMUNITY_NOTE,Community Note,"Ridhima Kapoor, Sr. Community Manager @ AWS",,
+10:00 AM - 10:30 AM,KEYNOTE,Keynote - Stepping Into The Agentic Web: Building Smart Applications in the Era of AI,"Mr. Shubham Londhe, Developer Advocate @ AWS",,
+10:30 AM - 10:45 AM,SPN01,AWS Cost Optimization - A Journey,"Paresh Domadia, Head of Infrastructure and SRE @ Phonon Communications",,
+10:45 AM - 11:00 AM,SPN02,Powering AI agents with real-time analytics,"Daniel Nirmal Raja, Support Engineer @ ClickHouse",,
+11:00 AM - 11:15 AM,SPN03,Digital Nomadism With Rezoomex,,,
+11:15 AM - 11:30 AM,SPN04,Gold Sponsors' Introductions,,,
+11:30 AM - 12:00 PM,ACD202,From Idea to Architecture in Minutes: StackAdvisor.ai on AWS,"Mr. Dhaval Nagar, AWS Serverless Hero & Founder @ AppGambit",,
+12:00 PM - 12:15 PM,FUN,Fun Activity & Felicitation,,,
+12:15 PM - 1:30 PM,LUNCH,"Lunch, Networking and Booth visits",,,
+1:30 PM - 1:45 PM,ACD214,"AWS Security in 2025: What’s Changed, What Hasn’t, and What Comes Next","Asmita Khuspe, Cloud Engineer @ LTIMindtree",Sur Sagar Shield,Security & Observability
+1:30 PM - 1:45 PM,ACD201,"No Servers, No Stress: Build scalable Full-Stack Apps with Lambda & Amplify","Harsh Solanki, Full-Stack Engineer @ Reyna Solutions",Khanderao Cloudworks,DevOps & Serverless
+1:30 PM - 1:45 PM,ACD101,Beyond Files: Unlocking AWS S3 as a Vector Store and Table for AI and Analytics,"Jay Rajvadiya, Tech Lead @ AtliQ Technologies",Lukshmi Vilas Palace,GenAI
+1:45 PM - 2:15 PM,ACD204,From Data Chaos to Insights: Zero-ETL on AWS,"Nirmal Chhodavadiya, Senior Data Engineer @ Credibly",Sur Sagar Shield,Security & Observability
+1:45 PM - 2:15 PM,ACD301,Streamlining Success: The Ultimate AWS Customer Experience,"Nilesh Vaghela, AWS Community Hero & Founder @ Electromech & CloudKida",Khanderao Cloudworks,DevOps & Serverless
+1:45 PM - 2:15 PM,ACD213,Harnessing the Power of OPEA Framework and AWS GenAI for Enterprise Transformation,"Ravi Soni, AWS Community Builder & Solution Architect @ Rishabh Software",Lukshmi Vilas Palace,GenAI
+2:15 PM - 2:45 PM,ACD203,"Scaling Your Startup with AWS: Patterns, Pitfalls, and Best Practices","Manthan Tripathi, AWS Community Builder & Technical Architect @ Proclink",Sur Sagar Shield,Security & Observability
+2:15 PM - 2:45 PM,ACD302,Seamless Kubernetes Migration: Leveraging AWS Kubernetes Migration Factory (KMF) to Move from GKE to EKS,"Abhishek Wagh, AWS Community Builder & Sr. Platform Engineer @ Quantiphi",Khanderao Cloudworks,DevOps & Serverless
+2:15 PM - 2:45 PM,ACD303,Reimagining Software Engineering: The AI-Driven Development Life Cycle (AI-DLC),"Bhuvaneswari Subramani, AWS Community Hero & Chief Cloud Evangelist @ Intuitive Cloud",Lukshmi Vilas Palace,GenAI
+2:45 PM - 3:15 PM,ACD205,Titans of the Observability Plane: AWS Managed Grafana & Prometheus,"Nirmal Pathak, AWS Community Builder & Cloud Infrastructure Architect @ SonicJobs",Sur Sagar Shield,Security & Observability
+2:45 PM - 3:15 PM,ACD206,Policy as Code: Bringing Compliance into Your CI/CD Pipeline,"Priyal Jadav, AWS Community Builder & @ PMC Retail",Khanderao Cloudworks,DevOps & Serverless
+2:45 PM - 3:15 PM,ACD207,Building Full-stack AI Experiences with Amplify AI Kit,"Chirag Darji, AWS Community Builder & Engineering Manager @ Avalara",Lukshmi Vilas Palace,GenAI
+3:15 PM - 3:30 PM,TEA,Tea Break & Networking,,,
+3:30 PM - 4:00 PM,ACD208,Day 2 Security on AWS: What No One Tells You After You Go Live,"Ameya Vaidya, AWS Community Builder & Technical Trainer",Sur Sagar Shield,Security & Observability
+3:30 PM - 4:00 PM,ACD304,Elevate the Migration journey of your customer with AWS Transform,"Vishnu Vashist, Partner Success Solutions Architect @ AWS",Khanderao Cloudworks,DevOps & Serverless
+3:30 PM - 4:00 PM,ACD209,"Amazon Q CLI + MCP: Building Smarter, Not Harder","Omshree Butani, AWS Community Builder & Cloud Engineer @ Accenture",Lukshmi Vilas Palace,GenAI
+4:00 PM - 4:30 PM,ACD210,From Anomalies to Insights: CloudWatch & SageMaker for Smarter Observability,"Ashwin Raiyani, AWS Community Builder & Assistant Professor @ Nirma University; Jatin Goel, Cloud Instructor & DevOps Architect @ Freelance",Sur Sagar Shield,Security & Observability
+4:00 PM - 4:30 PM,ACD211,Spin Up EKS Clusters the Smart Way – Amazon Q + Automode in Action,"Ashish Gajjar, AWS Community Builder & Member of Technical Staff @ eInfochips; Krutarth Rindani, AWS Community Builder & Sr. DevOps Engineer @ McAfee",Khanderao Cloudworks,DevOps & Serverless
+4:00 PM - 4:30 PM,ACD212,"Building GenAI Solutions with AWS Bedrock, Knowledge Bases & Agents","Vrajesh Jayswal, AWS Community Builder & Technical Architect @ Rishabh Software; Ketan Rathod, Technical Trainer @ Rishabh Software",Lukshmi Vilas Palace,GenAI
+4:30 PM - 5:00 PM,QUIZ,Quiz,"Dhaval Pancholi, Lead DevOps Engineer @ Cactus Communications",,
+5:00 PM - 5:15 PM,CLOSING,Concluding Keynote,"Dimple Vaghela, AWS Community Builder & Director @ Electromech Cloudtech Pvt Ltd.",,

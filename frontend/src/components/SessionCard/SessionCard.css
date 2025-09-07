@@ -1,0 +1,157 @@
+.session-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-left: 4px solid #ff9900;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 220px;
+}
+
+.session-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.session-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.session-title {
+  color: #232f3e;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+  margin-right: 15px;
+}
+
+.session-track {
+  background-color: #ff9900;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.session-details {
+  margin-bottom: 24px;
+  flex-grow: 1;
+}
+
+.session-info {
+  display: flex;
+  margin-bottom: 8px;
+}
+
+.session-info:last-child {
+  margin-bottom: 0;
+}
+
+.session-label {
+  font-weight: 500;
+  color: #666;
+  min-width: 80px;
+  margin-right: 10px;
+}
+
+.session-value {
+  color: #232f3e;
+  flex: 1;
+}
+
+.session-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+}
+
+.feedback-submitted {
+  color: #067d68;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.session-card .btn {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .session-card {
+    padding: 20px;
+    min-height: 200px;
+  }
+  
+  .session-title {
+    font-size: 18px;
+  }
+  
+  .session-track {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .session-card {
+    padding: 16px;
+    min-height: 180px;
+  }
+  
+  .session-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .session-title {
+    font-size: 16px;
+    margin-right: 0;
+  }
+  
+  .session-track {
+    align-self: flex-start;
+  }
+  
+  .session-info {
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .session-label {
+    min-width: auto;
+    font-size: 13px;
+  }
+  
+  .session-value {
+    font-size: 14px;
+  }
+  
+  .session-card .btn {
+    padding: 8px 16px;
+    font-size: 13px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .session-card {
+    padding: 12px;
+    min-height: 160px;
+  }
+  
+  .session-title {
+    font-size: 15px;
+  }
+}
