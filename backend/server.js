@@ -13,6 +13,12 @@ const jobRoutes = require('./routes/jobs');
 
 const app = express();
 
+// CORS middleware at the very top
+app.use(cors({
+  origin: 'https://main.d3vxdunsumxv41.amplifyapp.com',
+  credentials: true
+}));
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -20,21 +26,22 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
-app.use(cors({
-  origin: true,
-  credentials: true
-}));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
+
+// Default GET / route for health checks
+app.get('/', (req, res) => {
+  res.status(200).json({ status: 'OK' });
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Elastic Beanstalk health check
-app.get('/', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'AWS UG Vadodara Feedback API' });
+// POST /api/admin/uploadWhitelist route
+app.post('/api/admin/uploadWhitelist', (req, res) => {
+  res.json({ message: 'Whitelist uploaded successfully!' });
 });
 
 // Routes
@@ -44,9 +51,9 @@ app.use('/api/feedback', feedbackRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/jobs', jobRoutes);
 
-// 404 handler
+// Catch-all 404 handler
 app.use('*', (req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+  res.status(404).json({ error: 'Route not found' });
 });
 
 // Global error handler
@@ -74,7 +81,7 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -33,7 +33,6 @@ router.post('/login', async (req, res) => {
       user = new User({
         email: email.toLowerCase(),
         name: whitelistEntry.name,
-        phone: whitelistEntry.phone,
         role: 'attendee'
       });
       await user.save();

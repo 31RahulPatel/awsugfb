@@ -124,9 +124,9 @@ router.post('/uploadWhitelist', adminAuth, upload.single('file'), async (req, re
         .pipe(csv())
         .on('data', (row) => {
           attendees.push({
-            email: row.email?.toLowerCase(),
-            name: row.name,
-            phone: row.phone
+            email: (row.Email || row.email)?.toLowerCase(),
+            name: row.Name || row.name,
+            bookingId: row['Booking ID'] || row.bookingId || row.booking_id
           });
         })
         .on('end', async () => {
@@ -149,9 +149,9 @@ router.post('/uploadWhitelist', adminAuth, upload.single('file'), async (req, re
       const data = xlsx.utils.sheet_to_json(worksheet);
       
       const attendees = data.map(row => ({
-        email: row.email?.toLowerCase(),
-        name: row.name,
-        phone: row.phone
+        email: (row.Email || row.email)?.toLowerCase(),
+        name: row.Name || row.name,
+        bookingId: row['Booking ID'] || row.bookingId || row.booking_id
       }));
 
       if (attendees.length > 0) {
@@ -254,7 +254,7 @@ router.post('/attendees', adminAuth, async (req, res) => {
     const attendee = new Whitelist({
       email: req.body.email.toLowerCase(),
       name: req.body.name,
-      phone: req.body.phone
+      bookingId: req.body.bookingId
     });
     await attendee.save();
     res.status(201).json({ message: 'Attendee created successfully', attendee });
@@ -274,7 +274,7 @@ router.put('/attendees/:id', adminAuth, async (req, res) => {
       {
         email: req.body.email.toLowerCase(),
         name: req.body.name,
-        phone: req.body.phone
+        bookingId: req.body.bookingId
       },
       { new: true }
     );
