@@ -11,7 +11,7 @@ const whitelistSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  phone: {
+  bookingId: {
     type: String,
     required: true
   }

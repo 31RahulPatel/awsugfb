@@ -21,9 +21,7 @@ const limiter = rateLimit({
 
 app.use(limiter);
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.FRONTEND_URL, 'https://main.d3vxdunsumxv41.amplifyapp.com'] 
-    : ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  origin: true,
   credentials: true
 }));
 app.use(express.json());
@@ -32,6 +30,11 @@ app.use('/uploads', express.static('uploads'));
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Elastic Beanstalk health check
+app.get('/', (req, res) => {
+  res.status(200).json({ status: 'OK', message: 'AWS UG Vadodara Feedback API' });
 });
 
 // Routes

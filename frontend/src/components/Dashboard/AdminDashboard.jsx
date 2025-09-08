@@ -38,7 +38,7 @@ const AdminDashboard = ({ user, onLogout }) => {
   const [newAttendee, setNewAttendee] = useState({
     email: '',
     name: '',
-    phone: ''
+    bookingId: ''
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -144,7 +144,7 @@ const AdminDashboard = ({ user, onLogout }) => {
         await adminAPI.createAttendee(newAttendee);
         setMessage('Attendee created successfully');
       }
-      setNewAttendee({ email: '', name: '', phone: '' });
+      setNewAttendee({ email: '', name: '', bookingId: '' });
       setEditingAttendee(null);
       setShowAttendeeForm(false);
       loadAttendees();
@@ -159,7 +159,7 @@ const AdminDashboard = ({ user, onLogout }) => {
     setNewAttendee({
       email: attendee.email,
       name: attendee.name,
-      phone: attendee.phone
+      bookingId: attendee.bookingId
     });
     setEditingAttendee(attendee);
     setShowAttendeeForm(true);
@@ -736,7 +736,7 @@ const AdminDashboard = ({ user, onLogout }) => {
                 onChange={handleCSVUpload}
                 className="file-input"
               />
-              <p className="csv-format">CSV Format: email, name, phone</p>
+              <p className="csv-format">CSV Format: email, name, bookingId</p>
             </div>
 
             <div className="create-attendee-section">
@@ -747,7 +747,7 @@ const AdminDashboard = ({ user, onLogout }) => {
                   onClick={() => {
                     setShowAttendeeForm(!showAttendeeForm);
                     setEditingAttendee(null);
-                    setNewAttendee({ email: '', name: '', phone: '' });
+                    setNewAttendee({ email: '', name: '', bookingId: '' });
                   }}
                 >
                   {showAttendeeForm ? 'Cancel' : 'Add Attendee'}
@@ -780,11 +780,11 @@ const AdminDashboard = ({ user, onLogout }) => {
                       />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Phone</label>
+                      <label className="form-label">Booking ID</label>
                       <input
                         type="text"
-                        name="phone"
-                        value={newAttendee.phone}
+                        name="bookingId"
+                        value={newAttendee.bookingId}
                         onChange={handleAttendeeInputChange}
                         className="form-input"
                         required
@@ -809,14 +809,14 @@ const AdminDashboard = ({ user, onLogout }) => {
                   <div className="table-header">
                     <div>Email</div>
                     <div>Name</div>
-                    <div>Phone</div>
+                    <div>Booking ID</div>
                     <div>Actions</div>
                   </div>
                   {attendees.map((attendee) => (
                     <div key={attendee._id} className="table-row">
                       <div>{attendee.email}</div>
                       <div>{attendee.name}</div>
-                      <div>{attendee.phone}</div>
+                      <div>{attendee.bookingId}</div>
                       <div className="actions">
                         <button 
                           className="btn btn-sm btn-secondary"
