@@ -70,11 +70,7 @@ router.get('/categories', auth, async (req, res) => {
   try {
     const categories = [
       { id: 'overall', name: 'Overall Experience', description: 'Rate your overall event experience' },
-      { id: 'session', name: 'Sessions', description: 'View and rate individual sessions' },
-      { id: 'food', name: 'Food & Catering', description: 'Rate the food and refreshments' },
-      { id: 'tech-booths', name: 'Tech Booths', description: 'Rate the technology booths and demos' },
-      { id: 'volunteer', name: 'Volunteers', description: 'Rate the volunteer support and assistance' },
-      { id: 'other', name: 'Other', description: 'Any other feedback about the event' }
+      { id: 'session', name: 'Sessions', description: 'View and rate individual sessions' }
     ];
     res.json(categories);
   } catch (error) {

@@ -162,8 +162,8 @@ const Dashboard = ({ user, onLogout }) => {
             <div className="footer-section">
               <h4>AWS User Group Vadodara</h4>
               <div className="footer-links">
-                <a href="https://www.linkedin.com/company/aws-user-group-vadodara" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-                <a href="https://awsugvadodara.com" target="_blank" rel="noopener noreferrer">Official Website</a>
+                <a href="https://www.linkedin.com/company/awsugbdq/posts/?feedView=all" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                <a href="https://communityday.awsugvad.in" target="_blank" rel="noopener noreferrer">Official Website</a>
               </div>
             </div>
             <div className="footer-section">
