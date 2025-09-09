@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const { auth, adminAuth } = require('../middleware/auth');
-const { uploadToS3 } = require('../config/s3');
+const { uploadToS3, uploadJobResumeToS3 } = require('../config/s3');
 const Job = require('../models/Job');
 const Resume = require('../models/Resume');
 const JobApplication = require('../models/JobApplication');
@@ -109,7 +109,7 @@ router.post('/resumes', auth, uploadToS3.single('resume'), async (req, res) => {
 });
 
 // Apply for job with S3 upload
-router.post('/apply', auth, uploadToS3.single('resume'), async (req, res) => {
+router.post('/apply', auth, uploadJobResumeToS3.single('resume'), async (req, res) => {
   try {
     // Check if user already applied for this job
     const existingApplication = await JobApplication.findOne({
@@ -130,6 +130,8 @@ router.post('/apply', auth, uploadToS3.single('resume'), async (req, res) => {
       phone: req.body.phone,
       resumeFile: req.file?.key || req.file?.filename,
       resumeS3Url: req.file?.location,
+      resumeS3Key: req.file?.key,
+      resumeOriginalName: req.file?.originalname,
       coverLetter: req.body.coverLetter
     });
     await application.save();
@@ -165,11 +167,12 @@ router.get('/admin/applications', adminAuth, async (req, res) => {
 // Admin: Export applications as CSV
 router.get('/admin/export/applications', adminAuth, async (req, res) => {
   try {
-    const applications = await JobApplication.find();
+    const applications = await JobApplication.find().sort({ createdAt: -1 });
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-    const csvHeader = 'ID,Job Title,Applicant Email,Name,Phone,Applied Date,Resume File\n';
+    
+    const csvHeader = 'ID,Job Title,Company,Applicant Email,Name,Phone,Applied Date,Resume File,Resume Download URL,Cover Letter\n';
     const csvRows = applications.map(app => 
-      `${app._id},"${app.jobTitle || ''}",${app.userEmail},"${app.name || ''}",${app.phone || ''},${new Date(app.createdAt).toLocaleDateString()},${app.resumeFile || ''}`
+      `${app._id},"${app.jobTitle || ''}","${app.company || ''}",${app.userEmail},"${app.name || ''}",${app.phone || ''},${new Date(app.createdAt).toLocaleDateString()},"${app.resumeOriginalName || app.resumeFile || ''}","${app.resumeS3Url || ''}","${(app.coverLetter || '').replace(/"/g, '""')}"`
     ).join('\n');
     
     res.setHeader('Content-Type', 'text/csv');
@@ -192,6 +195,25 @@ router.get('/admin/download/:id', adminAuth, async (req, res) => {
     res.redirect(resume.s3Url);
   } catch (error) {
     res.status(500).json({ message: 'Failed to get resume', error: error.message });
+  }
+});
+
+// Admin: Get job application resume S3 URL (redirect to S3)
+router.get('/admin/download/application/:id', adminAuth, async (req, res) => {
+  try {
+    const application = await JobApplication.findById(req.params.id);
+    if (!application) {
+      return res.status(404).json({ message: 'Job application not found' });
+    }
+    
+    if (!application.resumeS3Url) {
+      return res.status(404).json({ message: 'No resume found for this application' });
+    }
+    
+    // Redirect to S3 URL for direct download
+    res.redirect(application.resumeS3Url);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to get application resume', error: error.message });
   }
 });
 

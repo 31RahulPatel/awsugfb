@@ -744,8 +744,24 @@ const AdminDashboard = ({ user, onLogout }) => {
                       <p><strong>Job:</strong> {application.jobTitle} at {application.company}</p>
                       <p><strong>Email:</strong> {application.userEmail}</p>
                       <p><strong>Phone:</strong> {application.phone}</p>
-                      <p><strong>Resume:</strong> {application.resumeFile}</p>
                       <p><strong>Applied:</strong> {new Date(application.createdAt).toLocaleDateString()}</p>
+                      {application.coverLetter && (
+                        <p><strong>Cover Letter:</strong> {application.coverLetter.substring(0, 100)}{application.coverLetter.length > 100 ? '...' : ''}</p>
+                      )}
+                      <div className="resume-actions">
+                        {application.resumeS3Url ? (
+                          <a 
+                            href={application.resumeS3Url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="btn btn-sm btn-primary"
+                          >
+                            Download Resume ({application.resumeOriginalName || application.resumeFile || 'Resume'})
+                          </a>
+                        ) : (
+                          <span className="text-muted">No resume uploaded</span>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>

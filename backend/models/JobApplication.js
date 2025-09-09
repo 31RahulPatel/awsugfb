@@ -33,6 +33,12 @@ const jobApplicationSchema = new mongoose.Schema({
   resumeS3Url: {
     type: String
   },
+  resumeS3Key: {
+    type: String
+  },
+  resumeOriginalName: {
+    type: String
+  },
   coverLetter: {
     type: String
   }

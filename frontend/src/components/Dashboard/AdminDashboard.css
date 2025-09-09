@@ -904,4 +904,46 @@ Actions */
     width: 100%;
     text-align: center;
   }
+}/* Job A
+pplications List Specific Styling */
+.applications-list .data-item {
+  border-left-color: #007bff;
+}
+
+.applications-list .data-item h4 {
+  color: #007bff;
+}
+
+.text-muted {
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Enhanced resume actions for job applications */
+.applications-list .resume-actions {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.applications-list .resume-actions .btn {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.applications-list .resume-actions .btn:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .applications-list .resume-actions {
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+  
+  .applications-list .resume-actions .btn {
+    width: 100%;
+    text-align: center;
+  }
 }

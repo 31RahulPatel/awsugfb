@@ -51,6 +51,7 @@ export const jobAPI = {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
   downloadResumeAdmin: (filename) => api.get(`/jobs/admin/download/${filename}`, { responseType: 'blob' }),
+  downloadApplicationResumeAdmin: (applicationId) => api.get(`/jobs/admin/download/application/${applicationId}`, { responseType: 'blob' }),
   getResumes: () => api.get('/jobs/admin/resumes'),
   getApplications: () => api.get('/jobs/admin/applications'),
   exportApplications: () => api.get('/jobs/admin/export/applications', { responseType: 'blob' }),
