@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { sessionAPI, feedbackAPI } from '../../utils/api';
 import SessionCard from '../SessionCard/SessionCard';
 import FeedbackForm from '../FeedbackForm/FeedbackForm';
 import './Dashboard.css';
 
 const Dashboard = ({ user, onLogout }) => {
+  const navigate = useNavigate();
   const [sessions, setSessions] = useState([]);
   const [myFeedback, setMyFeedback] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -38,7 +40,7 @@ const Dashboard = ({ user, onLogout }) => {
 
   const handleCategoryFeedbackClick = (category) => {
     if (category.id === 'session') {
-      window.location.pathname = '/sessions';
+      navigate('/sessions');
     } else {
       setSelectedCategory(category);
       setSelectedSession(null);
@@ -140,14 +142,14 @@ const Dashboard = ({ user, onLogout }) => {
             <div className="job-card">
               <h3>Upload Resume</h3>
               <p>Share your resume with AWS community partners and potential employers</p>
-              <button className="btn btn-primary" onClick={() => window.location.pathname = '/resume-upload'}>
+              <button className="btn btn-primary" onClick={() => navigate('/resume-upload')}>
                 Upload Resume
               </button>
             </div>
             <div className="job-card">
               <h3>Apply for Jobs</h3>
               <p>Browse and apply for exciting opportunities from our community partners</p>
-              <button className="btn btn-primary" onClick={() => window.location.pathname = '/jobs'}>
+              <button className="btn btn-primary" onClick={() => navigate('/jobs')}>
                 View Jobs
               </button>
             </div>

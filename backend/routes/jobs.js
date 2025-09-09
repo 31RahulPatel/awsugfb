@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const { auth, adminAuth } = require('../middleware/auth');
+const { uploadToS3 } = require('../config/s3');
 const Job = require('../models/Job');
 const Resume = require('../models/Resume');
 const JobApplication = require('../models/JobApplication');
@@ -77,26 +78,38 @@ router.post('/upload-csv', adminAuth, upload.single('file'), (req, res) => {
   }
 });
 
-// Upload resume
-router.post('/resumes', auth, upload.single('resume'), async (req, res) => {
+// Upload resume to S3
+router.post('/resumes', auth, uploadToS3.single('resume'), async (req, res) => {
   try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
     const resume = new Resume({
       userEmail: req.user.email,
       name: req.body.name,
       phone: req.body.phone,
       experience: req.body.experience,
       skills: req.body.skills,
-      filename: req.file?.filename
+      filename: req.file.key.split('/').pop(), // Extract filename from S3 key
+      s3Url: req.file.location, // S3 URL
+      s3Key: req.file.key, // S3 key for future operations
+      originalName: req.file.originalname
     });
+    
     await resume.save();
-    res.status(201).json({ message: 'Resume uploaded successfully' });
+    res.status(201).json({ 
+      message: 'Resume uploaded successfully',
+      s3Url: req.file.location
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to upload resume' });
+    console.error('Resume upload error:', error);
+    res.status(500).json({ message: 'Failed to upload resume', error: error.message });
   }
 });
 
-// Apply for job
-router.post('/apply', auth, upload.single('resume'), async (req, res) => {
+// Apply for job with S3 upload
+router.post('/apply', auth, uploadToS3.single('resume'), async (req, res) => {
   try {
     // Check if user already applied for this job
     const existingApplication = await JobApplication.findOne({
@@ -115,7 +128,8 @@ router.post('/apply', auth, upload.single('resume'), async (req, res) => {
       company: req.body.company,
       name: req.body.name,
       phone: req.body.phone,
-      resumeFile: req.file?.filename,
+      resumeFile: req.file?.key || req.file?.filename,
+      resumeS3Url: req.file?.location,
       coverLetter: req.body.coverLetter
     });
     await application.save();
@@ -166,35 +180,38 @@ router.get('/admin/export/applications', adminAuth, async (req, res) => {
   }
 });
 
-// Admin: Download resume file
-router.get('/admin/download/:filename', adminAuth, (req, res) => {
-  const path = require('path');
-  const fs = require('fs');
-  const filename = req.params.filename;
-  const filePath = path.join(__dirname, '../uploads/resumes/', filename);
-  
-  if (fs.existsSync(filePath)) {
-    res.download(filePath);
-  } else {
-    res.status(404).json({ message: 'File not found' });
+// Admin: Get resume S3 URL (redirect to S3)
+router.get('/admin/download/:id', adminAuth, async (req, res) => {
+  try {
+    const resume = await Resume.findById(req.params.id);
+    if (!resume) {
+      return res.status(404).json({ message: 'Resume not found' });
+    }
+    
+    // Redirect to S3 URL for direct download
+    res.redirect(resume.s3Url);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to get resume', error: error.message });
   }
 });
 
-// Admin: Export resumes as CSV
+// Admin: Export resumes as CSV with S3 links
 router.get('/admin/export/resumes', adminAuth, async (req, res) => {
   try {
-    const resumes = await Resume.find();
+    const resumes = await Resume.find().sort({ createdAt: -1 });
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-    const csvHeader = 'ID,User Email,Name,Phone,Experience,Skills,Upload Date,File\n';
+    
+    const csvHeader = 'ID,User Email,Name,Phone,Experience,Skills,Upload Date,Original Filename,S3 Download Link\n';
     const csvRows = resumes.map(resume => 
-      `${resume._id},${resume.userEmail},"${resume.name || ''}",${resume.phone || ''},"${resume.experience || ''}","${resume.skills || ''}",${new Date(resume.createdAt).toLocaleDateString()},${resume.filename || ''}`
+      `${resume._id},${resume.userEmail},"${resume.name || ''}",${resume.phone || ''},"${resume.experience || ''}","${resume.skills || ''}",${new Date(resume.createdAt).toLocaleDateString()},"${resume.originalName || resume.filename || ''}",${resume.s3Url || ''}`
     ).join('\n');
     
     res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', `attachment; filename=resumes-${timestamp}.csv`);
+    res.setHeader('Content-Disposition', `attachment; filename=resumes-export-${timestamp}.csv`);
     res.send(csvHeader + csvRows);
   } catch (error) {
-    res.status(500).json({ message: 'Failed to export resumes' });
+    console.error('Export error:', error);
+    res.status(500).json({ message: 'Failed to export resumes', error: error.message });
   }
 });
 

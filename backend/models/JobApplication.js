@@ -30,6 +30,9 @@ const jobApplicationSchema = new mongoose.Schema({
   resumeFile: {
     type: String
   },
+  resumeS3Url: {
+    type: String
+  },
   coverLetter: {
     type: String
   }

@@ -123,19 +123,33 @@ router.post('/uploadWhitelist', adminAuth, upload.single('file'), async (req, re
       fs.createReadStream(filePath)
         .pipe(csv())
         .on('data', (row) => {
-          attendees.push({
-            email: (row.Email || row.email)?.toLowerCase(),
-            name: row.Name || row.name,
-            bookingId: row['Booking ID'] || row.bookingId || row.booking_id
-          });
+          const email = (row.Email || row.email)?.toLowerCase();
+          const name = row.Name || row.name;
+          const bookingId = row['Booking ID'] || row.bookingId || row.booking_id;
+          
+          // Only add if all required fields are present
+          if (email && name && bookingId) {
+            attendees.push({
+              email: email,
+              name: name,
+              bookingId: bookingId
+            });
+          }
         })
         .on('end', async () => {
-          if (attendees.length > 0) {
-            await Whitelist.deleteMany({});
-            await Whitelist.insertMany(attendees);
+          try {
+            if (attendees.length > 0) {
+              await Whitelist.deleteMany({});
+              const result = await Whitelist.insertMany(attendees, { ordered: false });
+              console.log(`Inserted ${result.length} attendees out of ${attendees.length} parsed`);
+            }
+            fs.unlinkSync(filePath);
+            res.json({ message: `${attendees.length} attendees uploaded successfully` });
+          } catch (dbError) {
+            console.error('Database insertion error:', dbError);
+            fs.unlinkSync(filePath);
+            res.status(500).json({ message: 'Database error', error: dbError.message });
           }
-          fs.unlinkSync(filePath);
-          res.json({ message: `${attendees.length} attendees uploaded successfully` });
         })
         .on('error', (error) => {
           fs.unlinkSync(filePath);
@@ -148,18 +162,30 @@ router.post('/uploadWhitelist', adminAuth, upload.single('file'), async (req, re
       const worksheet = workbook.Sheets[sheetName];
       const data = xlsx.utils.sheet_to_json(worksheet);
       
-      const attendees = data.map(row => ({
+      const attendees = data.filter(row => {
+        const email = (row.Email || row.email)?.toLowerCase();
+        const name = row.Name || row.name;
+        const bookingId = row['Booking ID'] || row.bookingId || row.booking_id;
+        return email && name && bookingId;
+      }).map(row => ({
         email: (row.Email || row.email)?.toLowerCase(),
         name: row.Name || row.name,
         bookingId: row['Booking ID'] || row.bookingId || row.booking_id
       }));
 
-      if (attendees.length > 0) {
-        await Whitelist.deleteMany({});
-        await Whitelist.insertMany(attendees);
+      try {
+        if (attendees.length > 0) {
+          await Whitelist.deleteMany({});
+          const result = await Whitelist.insertMany(attendees, { ordered: false });
+          console.log(`Inserted ${result.length} attendees out of ${attendees.length} parsed`);
+        }
+        fs.unlinkSync(filePath);
+        res.json({ message: `${attendees.length} attendees uploaded successfully` });
+      } catch (dbError) {
+        console.error('Database insertion error:', dbError);
+        fs.unlinkSync(filePath);
+        res.status(500).json({ message: 'Database error', error: dbError.message });
       }
-      fs.unlinkSync(filePath);
-      res.json({ message: `${attendees.length} attendees uploaded successfully` });
     }
   } catch (error) {
     res.status(500).json({ message: 'Upload failed', error: error.message });
