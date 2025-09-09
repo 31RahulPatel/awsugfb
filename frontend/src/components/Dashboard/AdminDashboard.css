@@ -868,3 +868,40 @@
     font-size: 13px;
   }
 }
+/* Resume 
+Actions */
+.resume-actions {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.resume-actions .btn {
+  text-decoration: none;
+  display: inline-block;
+}
+
+.resume-actions .btn:hover {
+  text-decoration: none;
+}
+
+/* Resumes List Specific Styling */
+.resumes-list .data-item {
+  border-left-color: #28a745;
+}
+
+.resumes-list .data-item h4 {
+  color: #28a745;
+}
+
+@media (max-width: 768px) {
+  .resume-actions {
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+  
+  .resume-actions .btn {
+    width: 100%;
+    text-align: center;
+  }
+}

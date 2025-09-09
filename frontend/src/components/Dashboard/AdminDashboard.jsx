@@ -12,6 +12,7 @@ const AdminDashboard = ({ user, onLogout }) => {
   const [selectedSpeaker, setSelectedSpeaker] = useState('All');
   const [jobs, setJobs] = useState([]);
   const [attendees, setAttendees] = useState([]);
+  const [resumes, setResumes] = useState([]);
 
   const [jobApplications, setJobApplications] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -50,6 +51,7 @@ const AdminDashboard = ({ user, onLogout }) => {
     } else if (activeTab === 'jobs') {
       loadJobs();
       loadJobApplications();
+      loadResumes();
     } else if (activeTab === 'attendees') {
       loadAttendees();
     }
@@ -111,6 +113,15 @@ const AdminDashboard = ({ user, onLogout }) => {
       setJobApplications(response.data);
     } catch (error) {
       setError('Failed to load job applications');
+    }
+  };
+
+  const loadResumes = async () => {
+    try {
+      const response = await jobAPI.getResumes();
+      setResumes(response.data);
+    } catch (error) {
+      setError('Failed to load resumes');
     }
   };
 
@@ -363,6 +374,24 @@ const AdminDashboard = ({ user, onLogout }) => {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       setError('Failed to export applications');
+    }
+  };
+
+  const exportResumes = async () => {
+    try {
+      const response = await jobAPI.exportResumes();
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/csv' }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `resumes-export-${timestamp}.csv`;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      setError('Failed to export resumes');
     }
   };
 
@@ -717,6 +746,49 @@ const AdminDashboard = ({ user, onLogout }) => {
                       <p><strong>Phone:</strong> {application.phone}</p>
                       <p><strong>Resume:</strong> {application.resumeFile}</p>
                       <p><strong>Applied:</strong> {new Date(application.createdAt).toLocaleDateString()}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="resumes-list">
+              <div className="list-header">
+                <h3>Uploaded Resumes ({resumes.length})</h3>
+                <button 
+                  className="btn btn-secondary" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    exportResumes();
+                  }}
+                  type="button"
+                >
+                  Download CSV
+                </button>
+              </div>
+              {resumes.length === 0 ? (
+                <p>No resumes uploaded yet</p>
+              ) : (
+                <div className="data-grid">
+                  {resumes.map((resume) => (
+                    <div key={resume._id} className="data-item">
+                      <h4>{resume.name}</h4>
+                      <p><strong>Email:</strong> {resume.userEmail}</p>
+                      <p><strong>Phone:</strong> {resume.phone}</p>
+                      <p><strong>Experience:</strong> {resume.experience}</p>
+                      <p><strong>Skills:</strong> {resume.skills}</p>
+                      <p><strong>Uploaded:</strong> {new Date(resume.createdAt).toLocaleDateString()}</p>
+                      <div className="resume-actions">
+                        <a 
+                          href={resume.s3Url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="btn btn-sm btn-primary"
+                        >
+                          Download Resume
+                        </a>
+                      </div>
                     </div>
                   ))}
                 </div>
