@@ -78,11 +78,27 @@ router.post('/upload-csv', adminAuth, upload.single('file'), (req, res) => {
   }
 });
 
+// Check if user has already uploaded a resume
+router.get('/resumes/check', auth, async (req, res) => {
+  try {
+    const existingResume = await Resume.findOne({ userEmail: req.user.email });
+    res.json({ hasResume: !!existingResume });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to check resume status' });
+  }
+});
+
 // Upload resume to S3
 router.post('/resumes', auth, uploadToS3.single('resume'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    // Check if user already has a resume uploaded
+    const existingResume = await Resume.findOne({ userEmail: req.user.email });
+    if (existingResume) {
+      return res.status(400).json({ message: 'You have already uploaded a resume. Only one resume per user is allowed.' });
     }
 
     const resume = new Resume({
@@ -99,7 +115,7 @@ router.post('/resumes', auth, uploadToS3.single('resume'), async (req, res) => {
     
     await resume.save();
     res.status(201).json({ 
-      message: 'Resume uploaded successfully',
+      message: 'Resume submitted successfully',
       s3Url: req.file.location
     });
   } catch (error) {
@@ -135,7 +151,7 @@ router.post('/apply', auth, uploadJobResumeToS3.single('resume'), async (req, re
       coverLetter: req.body.coverLetter
     });
     await application.save();
-    res.status(201).json({ message: 'Application submitted successfully' });
+    res.status(201).json({ message: 'Applied successfully' });
   } catch (error) {
     if (error.code === 11000) {
       return res.status(400).json({ message: 'You have already applied for this job' });

@@ -44,6 +44,7 @@ export const feedbackAPI = {
 export const jobAPI = {
   getJobs: () => api.get('/jobs'),
   createJob: (job) => api.post('/jobs', job),
+  checkResumeStatus: () => api.get('/jobs/resumes/check'),
   uploadResume: (formData) => api.post('/jobs/resumes', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),

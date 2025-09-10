@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { jobAPI } from '../../utils/api';
 import './ResumeUpload.css';
 
@@ -14,6 +14,26 @@ const ResumeUpload = ({ user, onLogout }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hasResume, setHasResume] = useState(false);
+  const [checkingResume, setCheckingResume] = useState(true);
+
+  useEffect(() => {
+    checkResumeStatus();
+  }, []);
+
+  const checkResumeStatus = async () => {
+    try {
+      const response = await jobAPI.checkResumeStatus();
+      setHasResume(response.data.hasResume);
+      if (response.data.hasResume) {
+        setMessage('You have already submitted your resume. Only one resume per user is allowed.');
+      }
+    } catch (error) {
+      console.error('Failed to check resume status');
+    } finally {
+      setCheckingResume(false);
+    }
+  };
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -40,7 +60,8 @@ const ResumeUpload = ({ user, onLogout }) => {
       uploadData.append('skills', formData.skills);
       
       await jobAPI.uploadResume(uploadData);
-      setMessage('Resume uploaded successfully!');
+      setMessage('Resume submitted successfully!');
+      setHasResume(true);
       setFile(null);
       setFormData({
         name: user.name || '',
@@ -51,7 +72,11 @@ const ResumeUpload = ({ user, onLogout }) => {
       });
       document.querySelector('input[type="file"]').value = '';
     } catch (error) {
-      setMessage('Failed to upload resume. Please try again.');
+      if (error.response?.data?.message) {
+        setMessage(error.response.data.message);
+      } else {
+        setMessage('Failed to upload resume. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -86,106 +111,116 @@ const ResumeUpload = ({ user, onLogout }) => {
       </header>
 
       <main className="container">
-        <div className="upload-form-container">
-          <form onSubmit={handleSubmit} className="upload-form">
-            <div className="form-section">
-              <h3>Personal Information</h3>
-              <div className="form-row">
+        {checkingResume ? (
+          <div className="loading">Checking resume status...</div>
+        ) : (
+          <div className="upload-form-container">
+            <form onSubmit={handleSubmit} className="upload-form">
+              <div className="form-section">
+                <h3>Personal Information</h3>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Full Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className="form-input"
+                      disabled={hasResume}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="form-input"
+                      disabled={hasResume}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label className="form-label">Phone Number</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="form-input"
+                      disabled={hasResume}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Years of Experience</label>
+                    <select
+                      name="experience"
+                      value={formData.experience}
+                      onChange={handleInputChange}
+                      className="form-input"
+                      disabled={hasResume}
+                      required
+                    >
+                      <option value="">Select Experience</option>
+                      <option value="0-1">0-1 years</option>
+                      <option value="1-3">1-3 years</option>
+                      <option value="3-5">3-5 years</option>
+                      <option value="5-10">5-10 years</option>
+                      <option value="10+">10+ years</option>
+                    </select>
+                  </div>
+                </div>
                 <div className="form-group">
-                  <label className="form-label">Full Name</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
+                  <label className="form-label">Key Skills</label>
+                  <textarea
+                    name="skills"
+                    value={formData.skills}
                     onChange={handleInputChange}
-                    className="form-input"
+                    className="form-textarea"
+                    placeholder="e.g., AWS, React, Node.js, Python..."
+                    rows="3"
+                    disabled={hasResume}
                     required
                   />
                 </div>
-                <div className="form-group">
-                  <label className="form-label">Email</label>
+              </div>
+
+              <div className="form-section">
+                <h3>Resume Upload</h3>
+                <div className="file-upload">
                   <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    required
+                    type="file"
+                    id="resume"
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleFileChange}
+                    className="file-input"
+                    disabled={hasResume}
+                    required={!hasResume}
                   />
+                  <label htmlFor="resume" className="file-label">
+                    {hasResume ? 'Resume already submitted' : (file ? file.name : 'Choose Resume File (PDF, DOC, DOCX)')}
+                  </label>
                 </div>
               </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Phone Number</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    required
-                  />
+
+              <button type="submit" className="btn btn-primary submit-btn" disabled={loading || hasResume}>
+                {hasResume ? 'Resume Already Submitted' : (loading ? 'Uploading...' : 'Upload Resume')}
+              </button>
+
+              {message && (
+                <div className={`message ${message.includes('success') || message.includes('submitted') ? 'success' : 'error'}`}>
+                  {message}
                 </div>
-                <div className="form-group">
-                  <label className="form-label">Years of Experience</label>
-                  <select
-                    name="experience"
-                    value={formData.experience}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    required
-                  >
-                    <option value="">Select Experience</option>
-                    <option value="0-1">0-1 years</option>
-                    <option value="1-3">1-3 years</option>
-                    <option value="3-5">3-5 years</option>
-                    <option value="5-10">5-10 years</option>
-                    <option value="10+">10+ years</option>
-                  </select>
-                </div>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Key Skills</label>
-                <textarea
-                  name="skills"
-                  value={formData.skills}
-                  onChange={handleInputChange}
-                  className="form-textarea"
-                  placeholder="e.g., AWS, React, Node.js, Python..."
-                  rows="3"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="form-section">
-              <h3>Resume Upload</h3>
-              <div className="file-upload">
-                <input
-                  type="file"
-                  id="resume"
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleFileChange}
-                  className="file-input"
-                  required
-                />
-                <label htmlFor="resume" className="file-label">
-                  {file ? file.name : 'Choose Resume File (PDF, DOC, DOCX)'}
-                </label>
-              </div>
-            </div>
-
-            <button type="submit" className="btn btn-primary submit-btn" disabled={loading}>
-              {loading ? 'Uploading...' : 'Upload Resume'}
-            </button>
-
-            {message && (
-              <div className={`message ${message.includes('success') ? 'success' : 'error'}`}>
-                {message}
-              </div>
-            )}
-          </form>
-        </div>
+              )}
+            </form>
+          </div>
+        )}
       </main>
 
       <footer className="footer">

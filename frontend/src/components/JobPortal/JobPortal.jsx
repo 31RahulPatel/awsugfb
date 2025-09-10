@@ -50,12 +50,16 @@ const JobPortal = ({ user, onLogout }) => {
       formData.append('resume', resumeFile);
       
       await jobAPI.applyForJob(formData);
-      alert('Application submitted successfully!');
+      alert('Applied successfully!');
       setSelectedJob(null);
       setResumeFile(null);
       e.target.reset();
     } catch (error) {
-      alert('Failed to submit application. Please try again.');
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      } else {
+        alert('Failed to submit application. Please try again.');
+      }
     }
   };
 
