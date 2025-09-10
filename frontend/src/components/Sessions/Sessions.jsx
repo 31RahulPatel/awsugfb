@@ -142,7 +142,6 @@ const Sessions = ({ user, onLogout }) => {
                 session={session}
                 onFeedbackClick={handleFeedbackClick}
                 hasFeedback={hasFeedback(session.sessionId)}
-                isEventStarted={isEventStarted}
               />
             ))}
           </div>

@@ -186,6 +186,27 @@
   font-size: 1.2rem;
 }
 
+.event-not-started {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.event-not-started h2 {
+  color: #232f3e;
+  margin-bottom: 20px;
+}
+
+.event-not-started p {
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 16px;
+}
+
 .job-portal {
   margin-bottom: 40px;
 }

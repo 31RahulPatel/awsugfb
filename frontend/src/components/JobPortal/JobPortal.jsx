@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { jobAPI } from '../../utils/api';
+import { jobAPI, sessionAPI } from '../../utils/api';
 import './JobPortal.css';
 
 const JobPortal = ({ user, onLogout }) => {
@@ -8,10 +8,30 @@ const JobPortal = ({ user, onLogout }) => {
   const [resumeFile, setResumeFile] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [eventSettings, setEventSettings] = useState(null);
+  const [isEventStarted, setIsEventStarted] = useState(false);
+  const [showEventModal, setShowEventModal] = useState(false);
 
   useEffect(() => {
+    checkEventStatus();
     loadJobs();
   }, []);
+
+  const checkEventStatus = async () => {
+    try {
+      const eventRes = await sessionAPI.getEventSettings();
+      setEventSettings(eventRes.data);
+      const now = new Date();
+      const eventStart = new Date(eventRes.data.eventStartDate);
+      const started = now >= eventStart;
+      setIsEventStarted(started);
+      if (!started) {
+        setShowEventModal(true);
+      }
+    } catch (error) {
+      console.error('Failed to check event status');
+    }
+  };
 
   const loadJobs = async () => {
     try {
@@ -28,6 +48,10 @@ const JobPortal = ({ user, onLogout }) => {
   };
 
   const handleApply = (job) => {
+    if (!isEventStarted) {
+      setShowEventModal(true);
+      return;
+    }
     setSelectedJob(job);
   };
 
@@ -103,6 +127,14 @@ const JobPortal = ({ user, onLogout }) => {
 
         {loading ? (
           <div className="loading">Loading jobs...</div>
+        ) : !isEventStarted ? (
+          <div className="event-not-started">
+            <h2>Event Not Started</h2>
+            <p>Job applications will be available once the event begins.</p>
+            <button className="btn btn-primary" onClick={() => window.location.pathname = '/'}>
+              Back to Dashboard
+            </button>
+          </div>
         ) : jobs.length === 0 ? (
           <div className="no-jobs">
             <p>No job opportunities available at the moment.</p>
@@ -209,6 +241,32 @@ const JobPortal = ({ user, onLogout }) => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      
+      {showEventModal && !isEventStarted && (
+        <div className="feedback-modal">
+          <div className="feedback-form-container">
+            <div className="feedback-header">
+              <h2>Event Not Started</h2>
+              <button className="close-btn" onClick={() => setShowEventModal(false)}>×</button>
+            </div>
+            <div className="event-modal-content">
+              <p>The event will begin on:</p>
+              <h3>{eventSettings && new Date(eventSettings.eventStartDate).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}</h3>
+              <p>Job applications will be available once the event starts!</p>
+              <button className="btn btn-primary" onClick={() => window.location.pathname = '/'}>
+                Back to Dashboard
+              </button>
+            </div>
           </div>
         </div>
       )}

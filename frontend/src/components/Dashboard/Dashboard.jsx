@@ -50,16 +50,27 @@ const Dashboard = ({ user, onLogout }) => {
   };
 
   const handleCategoryFeedbackClick = (category) => {
+    if (category.id === 'session') {
+      navigate('/sessions');
+    } else {
+      if (!isEventStarted) {
+        setShowEventModal(true);
+        return;
+      }
+      setSelectedCategory(category);
+      setSelectedSession(null);
+    }
+  };
+
+  const handleJobPortalClick = (type) => {
     if (!isEventStarted) {
       setShowEventModal(true);
       return;
     }
-    
-    if (category.id === 'session') {
-      navigate('/sessions');
-    } else {
-      setSelectedCategory(category);
-      setSelectedSession(null);
+    if (type === 'resume') {
+      navigate('/resume-upload');
+    } else if (type === 'jobs') {
+      navigate('/jobs');
     }
   };
 
@@ -148,9 +159,8 @@ const Dashboard = ({ user, onLogout }) => {
                   <span className="feedback-submitted">✓ Feedback Submitted</span>
                 ) : (
                   <button 
-                    className={`btn ${isEventStarted ? 'btn-primary' : 'btn-disabled'}`}
+                    className="btn btn-primary"
                     onClick={() => handleCategoryFeedbackClick(category)}
-                    disabled={!isEventStarted}
                   >
                     Give Feedback
                   </button>
@@ -166,14 +176,14 @@ const Dashboard = ({ user, onLogout }) => {
             <div className="job-card">
               <h3>Upload Resume</h3>
               <p>Share your resume with AWS community partners and potential employers</p>
-              <button className="btn btn-primary" onClick={() => navigate('/resume-upload')}>
+              <button className="btn btn-primary" onClick={() => handleJobPortalClick('resume')}>
                 Upload Resume
               </button>
             </div>
             <div className="job-card">
               <h3>Apply for Jobs</h3>
               <p>Browse and apply for exciting opportunities from our community partners</p>
-              <button className="btn btn-primary" onClick={() => navigate('/jobs')}>
+              <button className="btn btn-primary" onClick={() => handleJobPortalClick('jobs')}>
                 View Jobs
               </button>
             </div>

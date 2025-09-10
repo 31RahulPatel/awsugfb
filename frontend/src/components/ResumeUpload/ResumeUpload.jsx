@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { jobAPI } from '../../utils/api';
+import { jobAPI, sessionAPI } from '../../utils/api';
 import './ResumeUpload.css';
 
 const ResumeUpload = ({ user, onLogout }) => {
@@ -16,10 +16,30 @@ const ResumeUpload = ({ user, onLogout }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [hasResume, setHasResume] = useState(false);
   const [checkingResume, setCheckingResume] = useState(true);
+  const [eventSettings, setEventSettings] = useState(null);
+  const [isEventStarted, setIsEventStarted] = useState(false);
+  const [showEventModal, setShowEventModal] = useState(false);
 
   useEffect(() => {
+    checkEventStatus();
     checkResumeStatus();
   }, []);
+
+  const checkEventStatus = async () => {
+    try {
+      const eventRes = await sessionAPI.getEventSettings();
+      setEventSettings(eventRes.data);
+      const now = new Date();
+      const eventStart = new Date(eventRes.data.eventStartDate);
+      const started = now >= eventStart;
+      setIsEventStarted(started);
+      if (!started) {
+        setShowEventModal(true);
+      }
+    } catch (error) {
+      console.error('Failed to check event status');
+    }
+  };
 
   const checkResumeStatus = async () => {
     try {
@@ -113,6 +133,14 @@ const ResumeUpload = ({ user, onLogout }) => {
       <main className="container">
         {checkingResume ? (
           <div className="loading">Checking resume status...</div>
+        ) : !isEventStarted ? (
+          <div className="event-not-started">
+            <h2>Event Not Started</h2>
+            <p>Resume upload will be available once the event begins.</p>
+            <button className="btn btn-primary" onClick={() => window.location.pathname = '/'}>
+              Back to Dashboard
+            </button>
+          </div>
         ) : (
           <div className="upload-form-container">
             <form onSubmit={handleSubmit} className="upload-form">
@@ -219,6 +247,32 @@ const ResumeUpload = ({ user, onLogout }) => {
                 </div>
               )}
             </form>
+          </div>
+        )}
+        
+        {showEventModal && !isEventStarted && (
+          <div className="feedback-modal">
+            <div className="feedback-form-container">
+              <div className="feedback-header">
+                <h2>Event Not Started</h2>
+                <button className="close-btn" onClick={() => setShowEventModal(false)}>×</button>
+              </div>
+              <div className="event-modal-content">
+                <p>The event will begin on:</p>
+                <h3>{eventSettings && new Date(eventSettings.eventStartDate).toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}</h3>
+                <p>Resume upload will be available once the event starts!</p>
+                <button className="btn btn-primary" onClick={() => window.location.pathname = '/'}>
+                  Back to Dashboard
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </main>
