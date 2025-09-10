@@ -1,5 +1,6 @@
 const express = require('express');
 const Session = require('../models/Session');
+const EventSettings = require('../models/EventSettings');
 const { auth } = require('../middleware/auth');
 
 const router = express.Router();
@@ -22,6 +23,20 @@ router.get('/:sessionId', auth, async (req, res) => {
       return res.status(404).json({ message: 'Session not found' });
     }
     res.json(session);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Get event settings (public route for users)
+router.get('/event/settings', auth, async (req, res) => {
+  try {
+    let settings = await EventSettings.findOne();
+    if (!settings) {
+      settings = new EventSettings();
+      await settings.save();
+    }
+    res.json(settings);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

@@ -5,7 +5,7 @@ import AdminReports from '../AdminReports/AdminReports';
 import './AdminDashboard.css';
 
 const AdminDashboard = ({ user, onLogout }) => {
-  const [activeTab, setActiveTab] = useState('sessions');
+  const [activeTab, setActiveTab] = useState('event-settings');
   const [sessions, setSessions] = useState([]);
   const [filteredSessions, setFilteredSessions] = useState([]);
   const [selectedTrack, setSelectedTrack] = useState('All');
@@ -41,6 +41,10 @@ const AdminDashboard = ({ user, onLogout }) => {
     name: '',
     bookingId: ''
   });
+  const [eventSettings, setEventSettings] = useState({
+    eventStartDate: '',
+    eventName: 'AWS UG Vadodara Community Day'
+  });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -54,6 +58,8 @@ const AdminDashboard = ({ user, onLogout }) => {
       loadResumes();
     } else if (activeTab === 'attendees') {
       loadAttendees();
+    } else if (activeTab === 'event-settings') {
+      loadEventSettings();
     }
   }, [activeTab]);
 
@@ -395,8 +401,86 @@ const AdminDashboard = ({ user, onLogout }) => {
     }
   };
 
+  const loadEventSettings = async () => {
+    try {
+      const response = await adminAPI.getEventSettings();
+      setEventSettings({
+        eventStartDate: new Date(response.data.eventStartDate).toISOString().slice(0, 16),
+        eventName: response.data.eventName
+      });
+    } catch (error) {
+      setError('Failed to load event settings');
+    }
+  };
+
+  const handleEventSettingsChange = (e) => {
+    setEventSettings({
+      ...eventSettings,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleUpdateEventSettings = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setMessage('');
+
+    try {
+      await adminAPI.updateEventSettings({
+        eventStartDate: new Date(eventSettings.eventStartDate).toISOString(),
+        eventName: eventSettings.eventName
+      });
+      setMessage('Event settings updated successfully');
+    } catch (error) {
+      setError('Failed to update event settings');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
+      case 'event-settings':
+        return (
+          <div className="event-settings-tab">
+            <h3>Event Settings</h3>
+            {message && <div className="success-message">{message}</div>}
+            {error && <div className="error-message">{error}</div>}
+            
+            <form onSubmit={handleUpdateEventSettings} className="event-settings-form">
+              <div className="form-group">
+                <label className="form-label">Event Name</label>
+                <input
+                  type="text"
+                  name="eventName"
+                  value={eventSettings.eventName}
+                  onChange={handleEventSettingsChange}
+                  className="form-input"
+                  required
+                />
+              </div>
+              
+              <div className="form-group">
+                <label className="form-label">Event Start Date & Time</label>
+                <input
+                  type="datetime-local"
+                  name="eventStartDate"
+                  value={eventSettings.eventStartDate}
+                  onChange={handleEventSettingsChange}
+                  className="form-input"
+                  required
+                />
+                <p className="form-help">Users will only be able to submit feedback after this date and time</p>
+              </div>
+              
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? 'Updating...' : 'Update Event Settings'}
+              </button>
+            </form>
+          </div>
+        );
+      
       case 'sessions':
         return (
           <div className="sessions-tab">
@@ -962,6 +1046,12 @@ const AdminDashboard = ({ user, onLogout }) => {
 
       <main className="container">
         <div className="admin-tabs">
+          <button
+            className={`tab-btn ${activeTab === 'event-settings' ? 'active' : ''}`}
+            onClick={() => setActiveTab('event-settings')}
+          >
+            Event Settings
+          </button>
           <button
             className={`tab-btn ${activeTab === 'sessions' ? 'active' : ''}`}
             onClick={() => setActiveTab('sessions')}

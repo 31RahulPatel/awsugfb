@@ -87,6 +87,19 @@
   font-size: 14px;
 }
 
+.session-card .btn-disabled {
+  background-color: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed !important;
+  border-color: #ccc !important;
+}
+
+.session-card .btn-disabled:hover {
+  background-color: #ccc !important;
+  color: #666 !important;
+  transform: none !important;
+}
+
 @media (max-width: 768px) {
   .session-card {
     padding: 20px;

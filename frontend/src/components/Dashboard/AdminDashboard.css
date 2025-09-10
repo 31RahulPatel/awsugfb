@@ -103,9 +103,32 @@
 
 .sessions-tab,
 .jobs-tab,
-.attendees-tab {
+.attendees-tab,
+.event-settings-tab {
   display: grid;
   gap: 30px;
+}
+
+.event-settings-form {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+}
+
+.event-settings-form h3 {
+  color: #232f3e;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.form-help {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+  font-style: italic;
 }
 
 .create-session-form,

@@ -157,6 +157,35 @@
   margin-top: 16px;
 }
 
+.btn-disabled {
+  background-color: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed !important;
+  border-color: #ccc !important;
+}
+
+.btn-disabled:hover {
+  background-color: #ccc !important;
+  color: #666 !important;
+  transform: none !important;
+}
+
+.event-modal-content {
+  text-align: center;
+  padding: 20px;
+}
+
+.event-modal-content p {
+  margin: 10px 0;
+  color: #666;
+}
+
+.event-modal-content h3 {
+  color: #ff9900;
+  margin: 20px 0;
+  font-size: 1.2rem;
+}
+
 .job-portal {
   margin-bottom: 40px;
 }

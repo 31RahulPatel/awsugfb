@@ -33,6 +33,7 @@ export const authAPI = {
 export const sessionAPI = {
   getSessions: () => api.get('/sessions'),
   getSession: (sessionId) => api.get(`/sessions/${sessionId}`),
+  getEventSettings: () => api.get('/sessions/event/settings'),
 };
 
 export const feedbackAPI = {
@@ -82,6 +83,8 @@ export const adminAPI = {
   deleteSession: (id) => api.delete(`/admin/sessions/${id}`),
   getFeedbackByCategory: (category) => api.get(`/admin/feedback/category/${category}`),
   getCategoryStats: () => api.get('/admin/feedback/categories/stats'),
+  getEventSettings: () => api.get('/admin/event-settings'),
+  updateEventSettings: (settings) => api.put('/admin/event-settings', settings),
 };
 
 export default api;

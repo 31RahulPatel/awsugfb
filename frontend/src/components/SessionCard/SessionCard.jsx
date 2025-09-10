@@ -1,7 +1,7 @@
 import React from 'react';
 import './SessionCard.css';
 
-const SessionCard = ({ session, onFeedbackClick, hasFeedback }) => {
+const SessionCard = ({ session, onFeedbackClick, hasFeedback, isEventStarted = true }) => {
   return (
     <div className="session-card">
       <div className="session-header">
@@ -31,8 +31,9 @@ const SessionCard = ({ session, onFeedbackClick, hasFeedback }) => {
           <span className="feedback-submitted">✓ Feedback Submitted</span>
         ) : (
           <button 
-            className="btn btn-primary"
+            className={`btn ${isEventStarted ? 'btn-primary' : 'btn-disabled'}`}
             onClick={() => onFeedbackClick(session)}
+            disabled={!isEventStarted}
           >
             Give Feedback
           </button>

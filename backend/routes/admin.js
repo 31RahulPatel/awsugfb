@@ -7,6 +7,7 @@ const path = require('path');
 const Session = require('../models/Session');
 const Feedback = require('../models/Feedback');
 const Whitelist = require('../models/Whitelist');
+const EventSettings = require('../models/EventSettings');
 const { adminAuth } = require('../middleware/auth');
 
 const router = express.Router();
@@ -391,6 +392,38 @@ router.get('/feedback/categories/stats', adminAuth, async (req, res) => {
       })
     );
     res.json(stats);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Event Settings Routes
+// Get event settings
+router.get('/event-settings', adminAuth, async (req, res) => {
+  try {
+    let settings = await EventSettings.findOne();
+    if (!settings) {
+      settings = new EventSettings();
+      await settings.save();
+    }
+    res.json(settings);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Update event settings
+router.put('/event-settings', adminAuth, async (req, res) => {
+  try {
+    let settings = await EventSettings.findOne();
+    if (!settings) {
+      settings = new EventSettings(req.body);
+    } else {
+      settings.eventStartDate = req.body.eventStartDate;
+      settings.eventName = req.body.eventName || settings.eventName;
+    }
+    await settings.save();
+    res.json({ message: 'Event settings updated successfully', settings });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

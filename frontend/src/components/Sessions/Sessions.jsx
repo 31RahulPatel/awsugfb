@@ -9,6 +9,9 @@ const Sessions = ({ user, onLogout }) => {
   const [myFeedback, setMyFeedback] = useState([]);
   const [selectedSession, setSelectedSession] = useState(null);
   const [selectedTrack, setSelectedTrack] = useState('All');
+  const [eventSettings, setEventSettings] = useState(null);
+  const [isEventStarted, setIsEventStarted] = useState(false);
+  const [showEventModal, setShowEventModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -19,12 +22,19 @@ const Sessions = ({ user, onLogout }) => {
 
   const loadData = async () => {
     try {
-      const [sessionsRes, feedbackRes] = await Promise.all([
+      const [sessionsRes, feedbackRes, eventRes] = await Promise.all([
         sessionAPI.getSessions(),
-        feedbackAPI.getMyFeedback()
+        feedbackAPI.getMyFeedback(),
+        sessionAPI.getEventSettings()
       ]);
       setSessions(sessionsRes.data);
       setMyFeedback(feedbackRes.data);
+      setEventSettings(eventRes.data);
+      
+      // Check if event has started
+      const now = new Date();
+      const eventStart = new Date(eventRes.data.eventStartDate);
+      setIsEventStarted(now >= eventStart);
     } catch (error) {
       setError('Failed to load sessions');
     } finally {
@@ -33,6 +43,10 @@ const Sessions = ({ user, onLogout }) => {
   };
 
   const handleFeedbackClick = (session) => {
+    if (!isEventStarted) {
+      setShowEventModal(true);
+      return;
+    }
     setSelectedSession(session);
   };
 
@@ -128,6 +142,7 @@ const Sessions = ({ user, onLogout }) => {
                 session={session}
                 onFeedbackClick={handleFeedbackClick}
                 hasFeedback={hasFeedback(session.sessionId)}
+                isEventStarted={isEventStarted}
               />
             ))}
           </div>
@@ -160,6 +175,32 @@ const Sessions = ({ user, onLogout }) => {
           onClose={() => setSelectedSession(null)}
           onSubmit={handleFeedbackSubmit}
         />
+      )}
+      
+      {showEventModal && (
+        <div className="feedback-modal">
+          <div className="feedback-form-container">
+            <div className="feedback-header">
+              <h2>Event Not Started</h2>
+              <button className="close-btn" onClick={() => setShowEventModal(false)}>×</button>
+            </div>
+            <div className="event-modal-content">
+              <p>The event will begin on:</p>
+              <h3>{eventSettings && new Date(eventSettings.eventStartDate).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}</h3>
+              <p>You can come back and give feedback once the event starts!</p>
+              <button className="btn btn-primary" onClick={() => setShowEventModal(false)}>
+                Got it!
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { sessionAPI, feedbackAPI } from '../../utils/api';
 import SessionCard from '../SessionCard/SessionCard';
 import FeedbackForm from '../FeedbackForm/FeedbackForm';
+import EventTimer from '../EventTimer/EventTimer';
 import './Dashboard.css';
 
 const Dashboard = ({ user, onLogout }) => {
@@ -13,6 +14,9 @@ const Dashboard = ({ user, onLogout }) => {
   const [selectedSession, setSelectedSession] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [eventSettings, setEventSettings] = useState(null);
+  const [isEventStarted, setIsEventStarted] = useState(false);
+  const [showEventModal, setShowEventModal] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -23,14 +27,21 @@ const Dashboard = ({ user, onLogout }) => {
 
   const loadData = async () => {
     try {
-      const [sessionsRes, feedbackRes, categoriesRes] = await Promise.all([
+      const [sessionsRes, feedbackRes, categoriesRes, eventRes] = await Promise.all([
         sessionAPI.getSessions(),
         feedbackAPI.getMyFeedback(),
-        feedbackAPI.getCategories()
+        feedbackAPI.getCategories(),
+        sessionAPI.getEventSettings()
       ]);
       setSessions(sessionsRes.data);
       setMyFeedback(feedbackRes.data);
       setCategories(categoriesRes.data);
+      setEventSettings(eventRes.data);
+      
+      // Check if event has started
+      const now = new Date();
+      const eventStart = new Date(eventRes.data.eventStartDate);
+      setIsEventStarted(now >= eventStart);
     } catch (error) {
       setError('Failed to load data');
     } finally {
@@ -39,6 +50,11 @@ const Dashboard = ({ user, onLogout }) => {
   };
 
   const handleCategoryFeedbackClick = (category) => {
+    if (!isEventStarted) {
+      setShowEventModal(true);
+      return;
+    }
+    
     if (category.id === 'session') {
       navigate('/sessions');
     } else {
@@ -87,6 +103,13 @@ const Dashboard = ({ user, onLogout }) => {
       <main className="container">
         {error && <div className="error-message">{error}</div>}
         
+        {eventSettings && (
+          <EventTimer 
+            eventStartDate={eventSettings.eventStartDate}
+            eventName={eventSettings.eventName}
+          />
+        )}
+        
         <div className="dashboard-stats">
           <div className="stat-card">
             <h3>{sessions.length}</h3>
@@ -125,8 +148,9 @@ const Dashboard = ({ user, onLogout }) => {
                   <span className="feedback-submitted">✓ Feedback Submitted</span>
                 ) : (
                   <button 
-                    className="btn btn-primary"
+                    className={`btn ${isEventStarted ? 'btn-primary' : 'btn-disabled'}`}
                     onClick={() => handleCategoryFeedbackClick(category)}
+                    disabled={!isEventStarted}
                   >
                     Give Feedback
                   </button>
@@ -184,6 +208,32 @@ const Dashboard = ({ user, onLogout }) => {
           onClose={() => setSelectedCategory(null)}
           onSubmit={handleFeedbackSubmit}
         />
+      )}
+      
+      {showEventModal && (
+        <div className="feedback-modal">
+          <div className="feedback-form-container">
+            <div className="feedback-header">
+              <h2>Event Not Started</h2>
+              <button className="close-btn" onClick={() => setShowEventModal(false)}>×</button>
+            </div>
+            <div className="event-modal-content">
+              <p>The event will begin on:</p>
+              <h3>{eventSettings && new Date(eventSettings.eventStartDate).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}</h3>
+              <p>You can come back and give feedback once the event starts!</p>
+              <button className="btn btn-primary" onClick={() => setShowEventModal(false)}>
+                Got it!
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
