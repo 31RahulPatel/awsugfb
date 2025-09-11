@@ -61,6 +61,8 @@ export const jobAPI = {
   uploadJobsCSV: (formData) => api.post('/jobs/upload-csv', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
+  deleteJob: (id) => api.delete(`/jobs/${id}`),
+  deleteJobApplication: (id) => api.delete(`/jobs/applications/${id}`),
 };
 
 export const adminAPI = {

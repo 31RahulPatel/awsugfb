@@ -253,4 +253,30 @@ router.get('/admin/export/resumes', adminAuth, async (req, res) => {
   }
 });
 
+// Admin: Delete job
+router.delete('/:id', adminAuth, async (req, res) => {
+  try {
+    const job = await Job.findByIdAndDelete(req.params.id);
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+    res.json({ message: 'Job deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete job' });
+  }
+});
+
+// Admin: Delete job application
+router.delete('/applications/:id', adminAuth, async (req, res) => {
+  try {
+    const application = await JobApplication.findByIdAndDelete(req.params.id);
+    if (!application) {
+      return res.status(404).json({ message: 'Job application not found' });
+    }
+    res.json({ message: 'Job application deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete job application' });
+  }
+});
+
 module.exports = router;

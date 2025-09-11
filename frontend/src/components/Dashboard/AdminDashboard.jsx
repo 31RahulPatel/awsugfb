@@ -401,6 +401,30 @@ const AdminDashboard = ({ user, onLogout }) => {
     }
   };
 
+  const handleDeleteJobApplication = async (id) => {
+    if (window.confirm('Are you sure you want to delete this job application?')) {
+      try {
+        await jobAPI.deleteJobApplication(id);
+        setMessage('Job application deleted successfully');
+        loadJobApplications();
+      } catch (error) {
+        setError('Failed to delete job application');
+      }
+    }
+  };
+
+  const handleDeleteJob = async (id) => {
+    if (window.confirm('Are you sure you want to delete this job?')) {
+      try {
+        await jobAPI.deleteJob(id);
+        setMessage('Job deleted successfully');
+        loadJobs();
+      } catch (error) {
+        setError('Failed to delete job');
+      }
+    }
+  };
+
   const loadEventSettings = async () => {
     try {
       const response = await adminAPI.getEventSettings();
@@ -788,13 +812,28 @@ const AdminDashboard = ({ user, onLogout }) => {
               {jobs.length === 0 ? (
                 <p>No jobs posted yet</p>
               ) : (
-                <div className="data-grid">
+                <div className="data-table">
+                  <div className="table-header jobs-header">
+                    <div>Title</div>
+                    <div>Company</div>
+                    <div>Location</div>
+                    <div>Experience</div>
+                    <div>Actions</div>
+                  </div>
                   {jobs.map((job) => (
-                    <div key={job._id} className="data-item">
-                      <h4>{job.title}</h4>
-                      <p><strong>Company:</strong> {job.company}</p>
-                      <p><strong>Location:</strong> {job.location}</p>
-                      <p><strong>Experience:</strong> {job.experience}</p>
+                    <div key={job._id} className="table-row jobs-row">
+                      <div>{job.title}</div>
+                      <div>{job.company}</div>
+                      <div>{job.location}</div>
+                      <div>{job.experience}</div>
+                      <div className="actions">
+                        <button 
+                          className="btn btn-sm btn-danger"
+                          onClick={() => handleDeleteJob(job._id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -806,33 +845,41 @@ const AdminDashboard = ({ user, onLogout }) => {
             <div className="applications-list">
               <div className="list-header">
                 <h3>Job Applications ({jobApplications.length})</h3>
-                <button 
-                  className="btn btn-secondary" 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    exportJobApplications();
-                  }}
-                  type="button"
-                >
-                  Download CSV
-                </button>
+                <div className="header-actions">
+                  <button 
+                    className="btn btn-secondary" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      exportJobApplications();
+                    }}
+                    type="button"
+                  >
+                    Download CSV
+                  </button>
+                </div>
               </div>
               {jobApplications.length === 0 ? (
                 <p>No job applications received yet</p>
               ) : (
-                <div className="data-grid">
+                <div className="data-table">
+                  <div className="table-header applications-header">
+                    <div>Name</div>
+                    <div>Job</div>
+                    <div>Email</div>
+                    <div>Phone</div>
+                    <div>Applied</div>
+                    <div>Resume</div>
+                    <div>Actions</div>
+                  </div>
                   {jobApplications.map((application) => (
-                    <div key={application._id} className="data-item">
-                      <h4>{application.name}</h4>
-                      <p><strong>Job:</strong> {application.jobTitle} at {application.company}</p>
-                      <p><strong>Email:</strong> {application.userEmail}</p>
-                      <p><strong>Phone:</strong> {application.phone}</p>
-                      <p><strong>Applied:</strong> {new Date(application.createdAt).toLocaleDateString()}</p>
-                      {application.coverLetter && (
-                        <p><strong>Cover Letter:</strong> {application.coverLetter.substring(0, 100)}{application.coverLetter.length > 100 ? '...' : ''}</p>
-                      )}
-                      <div className="resume-actions">
+                    <div key={application._id} className="table-row applications-row">
+                      <div>{application.name}</div>
+                      <div>{application.jobTitle} at {application.company}</div>
+                      <div>{application.userEmail}</div>
+                      <div>{application.phone}</div>
+                      <div>{new Date(application.createdAt).toLocaleDateString()}</div>
+                      <div>
                         {application.resumeS3Url ? (
                           <a 
                             href={application.resumeS3Url} 
@@ -840,11 +887,19 @@ const AdminDashboard = ({ user, onLogout }) => {
                             rel="noopener noreferrer"
                             className="btn btn-sm btn-primary"
                           >
-                            Download Resume ({application.resumeOriginalName || application.resumeFile || 'Resume'})
+                            View Resume
                           </a>
                         ) : (
-                          <span className="text-muted">No resume uploaded</span>
+                          <span className="text-muted">No resume</span>
                         )}
+                      </div>
+                      <div className="actions">
+                        <button 
+                          className="btn btn-sm btn-danger"
+                          onClick={() => handleDeleteJobApplication(application._id)}
+                        >
+                          Delete
+                        </button>
                       </div>
                     </div>
                   ))}
