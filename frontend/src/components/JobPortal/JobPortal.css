@@ -176,7 +176,7 @@
   align-items: center;
   justify-content: center;
   z-index: 2000;
-  padding: 20px;
+  padding: 15px;
 }
 
 .modal-content {
@@ -184,8 +184,9 @@
   border-radius: 8px;
   max-width: 500px;
   width: 100%;
-  max-height: 90vh;
+  max-height: 95vh;
   overflow-y: auto;
+  margin: 0 auto;
 }
 
 .modal-header {
@@ -359,6 +360,44 @@
   }
 }
 
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 10px;
+    align-items: flex-start;
+    padding-top: 20px;
+  }
+  
+  .modal-content {
+    max-width: 100%;
+    max-height: calc(100vh - 40px);
+  }
+  
+  .modal-header {
+    padding: 16px 20px;
+  }
+  
+  .modal-header h3 {
+    font-size: 18px;
+  }
+  
+  .application-form {
+    padding: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  .modal-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .modal-actions .btn {
+    width: 100%;
+  }
+}
+
 @media (max-width: 480px) {
   .job-card {
     padding: 20px;
@@ -368,16 +407,65 @@
     font-size: 24px;
   }
   
+  .modal-overlay {
+    padding: 5px;
+    padding-top: 10px;
+  }
+  
   .modal-content {
-    margin: 10px;
+    max-height: calc(100vh - 20px);
+    border-radius: 4px;
   }
   
-  .modal-actions {
-    flex-direction: column;
+  .modal-header {
+    padding: 12px 16px;
   }
   
-  .modal-actions .btn {
-    width: 100%;
+  .modal-header h3 {
+    font-size: 16px;
+  }
+  
+  .application-form {
+    padding: 16px;
+  }
+  
+  .form-group {
+    margin-bottom: 14px;
+  }
+  
+  .form-input,
+  .form-textarea {
+    padding: 10px;
+    font-size: 16px;
+  }
+  
+  .form-label {
+    font-size: 13px;
+  }
+  
+  .file-label {
+    padding: 10px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  .modal-overlay {
+    padding: 2px;
+    padding-top: 5px;
+  }
+  
+  .modal-header {
+    padding: 10px 12px;
+  }
+  
+  .application-form {
+    padding: 12px;
+  }
+  
+  .form-input,
+  .form-textarea {
+    padding: 8px;
   }
 }
 
