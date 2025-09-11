@@ -19,14 +19,13 @@ const importAttendees = async () => {
     const attendees = await new Promise((resolve, reject) => {
       const results = [];
 
-      fs.createReadStream('../reformatted_attendees.csv')
+      fs.createReadStream('../AWS-Community-Day-Vadodara-2025-Attendees-10-09-2025-19-20-30 - Sheet1-2.csv')
         .pipe(csv({ mapHeaders: ({ header }) => header.trim() })) // normalize headers
         .on('data', (row) => {
-          // Normalize keys: handle possible "booking id", "BookingId", "booking_id"
-          const email = row.Email || row.email || row['E-mail'];
-          const name = row.Name || row.name;
-          const bookingId =
-            row['Booking ID'] || row.bookingId || row['booking_id'];
+          // Map CSV headers: Email, Name, Booking Id
+          const email = row.Email;
+          const name = row.Name;
+          const bookingId = row['Booking Id'];
 
           if (!bookingId) {
             console.warn('⚠️ Skipping row (missing bookingId):', row);

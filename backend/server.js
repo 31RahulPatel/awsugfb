@@ -22,7 +22,7 @@ app.use(cors({
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 200 // limit each IP to 200 requests per windowMs
 });
 
 app.use(limiter);
@@ -76,9 +76,16 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong!' });
 });
 
-// MongoDB connection
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB connected'))
+// MongoDB connection with optimized settings
+const mongoOptions = {
+  maxPoolSize: 50,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+  bufferMaxEntries: 0
+};
+
+mongoose.connect(process.env.MONGODB_URI, mongoOptions)
+  .then(() => console.log('MongoDB connected with connection pooling'))
   .catch(err => console.error('MongoDB connection error:', err));
 
 const PORT = process.env.PORT || 3000;
