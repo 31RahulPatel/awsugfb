@@ -15,7 +15,7 @@ FeedBack/
 - **Backend:** Node.js, Express.js
 - **Database:** MongoDB Atlas
 - **Authentication:** JWT + Whitelist verification
-- **Deployment:** Frontend (Netlify/Vercel), Backend (AWS Elastic Beanstalk)
+- **Deployment:** amplify, Backend (AWS Elastic Beanstalk)
 
 ### Features
 - Admin panel for attendee management and session creation
